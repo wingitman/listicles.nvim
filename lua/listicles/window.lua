@@ -1,6 +1,6 @@
---- listicle.nvim – floating window management
+--- listicles.nvim – floating window management
 --- Handles creating, showing, hiding, and cleaning up the terminal window
---- that runs the listicle binary.
+--- that runs the listicles binary.
 
 local M = {}
 
@@ -64,7 +64,7 @@ function M.open(opts, cmd, on_exit)
 
   -- Apply window-local options.
   vim.wo[state.win].winblend = opts.winblend or 0
-  vim.wo[state.win].winhighlight = "Normal:ListicleNormal,FloatBorder:ListicleBorder"
+  vim.wo[state.win].winhighlight = "Normal:ListiclesNormal,FloatBorder:ListiclesBorder"
   vim.wo[state.win].cursorline = false
 
   -- Start the terminal job inside the buffer.

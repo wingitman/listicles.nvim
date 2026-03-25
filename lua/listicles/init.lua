@@ -1,15 +1,15 @@
---- listicle.nvim
---- A Neovim wrapper for the listicle terminal file explorer.
---- https://github.com/listicle/listicle
+--- listicles.nvim
+--- A Neovim wrapper for the listicles terminal file explorer.
+--- https://github.com/wingitman/listicles
 
-local window = require("listicle.window")
+local window = require("listicles.window")
 
 local M = {}
 
 --- Default configuration.
 local defaults = {
-  -- Path to the listicle binary. "listicle" relies on $PATH.
-  bin = "listicle",
+  -- Path to the listicles binary. "listicles" relies on $PATH.
+  bin = "listicles",
 
   -- Floating window dimensions (fraction of editor size).
   width  = 0.85,
@@ -33,7 +33,7 @@ local defaults = {
   -- Set to "cd" for global, "tcd" for tab-local, or false to disable.
   cd_action = "lcd",
 
-  -- Keymap to open listicle. Set to false to disable.
+  -- Keymap to open listicles. Set to false to disable.
   keymap = "<leader>e",
 }
 
@@ -43,15 +43,15 @@ M.config = {}
 --- Ensure highlight groups exist.
 local function define_highlights()
   -- Fall back to built-in float groups if the user hasn't customised them.
-  if vim.fn.hlexists("ListicleNormal") == 0 then
-    vim.api.nvim_set_hl(0, "ListicleNormal", { link = "NormalFloat" })
+  if vim.fn.hlexists("ListiclesNormal") == 0 then
+    vim.api.nvim_set_hl(0, "ListiclesNormal", { link = "NormalFloat" })
   end
-  if vim.fn.hlexists("ListicleBorder") == 0 then
-    vim.api.nvim_set_hl(0, "ListicleBorder", { link = "FloatBorder" })
+  if vim.fn.hlexists("ListiclesBorder") == 0 then
+    vim.api.nvim_set_hl(0, "ListiclesBorder", { link = "FloatBorder" })
   end
 end
 
---- Act on the results written by listicle after it exits.
+--- Act on the results written by listicles after it exits.
 --- @param cd_file    string  Temp file that may contain a directory path.
 --- @param open_file  string  Temp file that may contain a file path.
 local function handle_exit(cd_file, open_file)
@@ -88,7 +88,7 @@ local function handle_exit(cd_file, open_file)
   end)
 end
 
---- Open the listicle floating window.
+--- Open the listicles floating window.
 --- @param start_dir string|nil  Directory to start in (defaults to cwd).
 function M.open(start_dir)
   if window.is_open() then
@@ -125,8 +125,8 @@ function M.open(start_dir)
   end)
 end
 
---- Toggle the listicle window (open if closed, no-op if already open since
---- listicle handles its own quit key).
+--- Toggle the listicles window (open if closed, no-op if already open since
+--- listicles handles its own quit key).
 function M.toggle(start_dir)
   if window.is_open() then
     window.close()
@@ -144,7 +144,7 @@ function M.setup(opts)
   if M.config.keymap then
     vim.keymap.set("n", M.config.keymap, function()
       M.toggle()
-    end, { desc = "Toggle listicle file explorer", silent = true })
+    end, { desc = "Toggle listicles file explorer", silent = true })
   end
 end
 
