@@ -6,9 +6,10 @@ local M = {}
 
 --- State for the single managed window instance.
 local state = {
-  buf = nil,   -- terminal buffer handle
-  win = nil,   -- floating window handle
-  job = nil,   -- terminal job id (for sending keys if needed)
+  buf     = nil,   -- terminal buffer handle
+  win     = nil,   -- floating window handle
+  job     = nil,   -- terminal job id (for sending keys if needed)
+  augroup = nil,   -- autocmd group id (cleared on teardown)
 }
 
 --- Returns true if the window is currently open and valid.
@@ -86,10 +87,31 @@ function M.open(opts, cmd, on_exit)
           state.buf = nil
         end
         state.job = nil
+        if state.augroup then
+          pcall(vim.api.nvim_del_augroup_by_id, state.augroup)
+          state.augroup = nil
+        end
         if on_exit then
           on_exit(exit_code)
         end
       end)
+    end,
+  })
+
+  -- Block <C-\><C-n> so the user can't accidentally escape into normal mode,
+  -- which would expose Neovim's command line (`:`) inside the terminal window.
+  vim.keymap.set("t", "<C-\\><C-n>", "<Nop>", { buffer = state.buf, silent = true })
+
+  -- Re-enter terminal insert mode whenever the terminal buffer is focused,
+  -- covering edge cases (mouse click, focus change) that can drop out of it.
+  state.augroup = vim.api.nvim_create_augroup("ListiclesTerminal", { clear = true })
+  vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
+    group    = state.augroup,
+    buffer   = state.buf,
+    callback = function()
+      if M.is_open() then
+        vim.cmd("startinsert")
+      end
     end,
   })
 
