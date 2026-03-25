@@ -1,6 +1,6 @@
 # listicle.nvim
 
-A Neovim plugin that wraps the [listicle](https://github.com/listicle/listicle)
+A Neovim plugin that wraps the [listicle](https://github.com/wingitman/listicles)
 terminal file explorer in a floating window, replacing Neo-tree / netrw for
 directory navigation.
 
