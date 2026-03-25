@@ -70,20 +70,26 @@ function M.open(opts, cmd, on_exit)
   -- Start the terminal job inside the buffer.
   state.job = vim.fn.termopen(cmd, {
     on_exit = function(_, exit_code, _)
-      -- Close window on exit.
-      if M.is_open() then
-        vim.api.nvim_win_close(state.win, true)
-        state.win = nil
-      end
-      -- Wipe buffer so it doesn't linger.
-      if M.has_buf() then
-        vim.api.nvim_buf_delete(state.buf, { force = true })
-        state.buf = nil
-      end
-      state.job = nil
-      if on_exit then
-        on_exit(exit_code)
-      end
+      -- Defer all teardown to the next event loop tick so the terminal job
+      -- has fully finished before we close the window, wipe the buffer, and
+      -- act on the exit (e.g. :edit a file). Without this, the window/buffer
+      -- teardown can race with the scheduled :edit and crash Neovim.
+      vim.schedule(function()
+        -- Close window on exit.
+        if M.is_open() then
+          vim.api.nvim_win_close(state.win, true)
+          state.win = nil
+        end
+        -- Wipe buffer so it doesn't linger.
+        if M.has_buf() then
+          vim.api.nvim_buf_delete(state.buf, { force = true })
+          state.buf = nil
+        end
+        state.job = nil
+        if on_exit then
+          on_exit(exit_code)
+        end
+      end)
     end,
   })
 
