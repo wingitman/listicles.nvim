@@ -95,6 +95,15 @@ function M.open(start_dir)
     return
   end
 
+  if vim.fn.executable(M.config.bin) == 0 then
+    vim.notify(
+      "listicles: binary '" .. (M.config.bin or "listicles") .. "' not found in PATH.\n" ..
+      "Install it from: https://github.com/wingitman/listicles",
+      vim.log.levels.ERROR
+    )
+    return
+  end
+
   define_highlights()
 
   -- Create temp files for IPC.
