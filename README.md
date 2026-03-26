@@ -1,14 +1,13 @@
 # listicles.nvim
 
 A Neovim plugin that wraps the [listicles](https://github.com/wingitman/listicles)
-terminal file explorer in a floating window, replacing Neo-tree / netrw for
-directory navigation.
+terminal file explorer in a floating window for directory navigation.
 
 ## Requirements
 
 - Neovim >= 0.9
-- The `listicles` binary on your `$PATH` (built from the listicles repo with
-  `make install`, or placed manually)
+- Go 1.21+ (to build)
+- [listicles](https://github.com/wingitman/listicles)
 
 ## Installation
 
@@ -115,3 +114,9 @@ vim.api.nvim_set_hl(0, "ListiclesBorder", { fg = "#7aa2f7" })
 This is the same IPC pattern used by the bundled shell wrappers
 (`listicles.bash`, `listicles.zsh`, etc.) — the plugin just replaces the shell
 function with Lua.
+
+
+## Support
+<a href='https://ko-fi.com/W7W21WP5L7' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi4.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
+Copyright (c) 2026 [delbysoft](https://github.com/wingitman)
