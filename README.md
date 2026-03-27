@@ -45,7 +45,7 @@ The default keymap is `<leader>e`. Override or disable it via `setup()`.
 Inside listicles:
 
 - **Navigate** with arrow keys or `hjkl` (if vim preset is enabled in
-  `~/.config/listicles/listicles.toml`)
+  `~/.config/delbysoft/listicles.toml`)
 - **Enter** on a **directory** → closes listicles and `:lcd`s Neovim into it
 - **Enter** on a **file** → closes listicles and opens the file in Neovim
   (respects `open_action`)
