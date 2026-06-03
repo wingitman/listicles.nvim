@@ -51,15 +51,47 @@ local function define_highlights()
   end
 end
 
+--- Parse the file target written by listicles.
+--- New format is two lines: path, then optional line number. The legacy
+--- path:line format is still accepted for older listicles binaries.
+--- @param raw string|nil
+--- @return string|nil file_path
+--- @return integer|nil line_num
+local function parse_open_target(raw)
+  if not raw or raw == "" then
+    return nil, nil
+  end
+
+  raw = raw:gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n+$", "")
+  if raw == "" then
+    return nil, nil
+  end
+
+  local newline = raw:find("\n", 1, true)
+  if newline then
+    local file_path = raw:sub(1, newline - 1)
+    local line_num = tonumber(raw:sub(newline + 1):match("^%s*(%d+)"))
+    return file_path, line_num
+  end
+
+  local legacy_path, legacy_line = raw:match("^(.*):(%d+)$")
+  if legacy_path and legacy_path ~= "" then
+    return legacy_path, tonumber(legacy_line)
+  end
+
+  return raw, nil
+end
+
 --- Act on the results written by listicles after it exits.
 --- @param cd_file    string  Temp file that may contain a directory path.
 --- @param open_file  string  Temp file that may contain a file path.
 local function handle_exit(cd_file, open_file)
   -- Read the file path first (takes priority).
   local file_path = nil
+  local line_num = nil
   local f = io.open(open_file, "r")
   if f then
-    file_path = f:read("*l")
+    file_path, line_num = parse_open_target(f:read("*a"))
     f:close()
   end
   os.remove(open_file)
@@ -77,13 +109,17 @@ local function handle_exit(cd_file, open_file)
   vim.schedule(function()
     -- Change directory if a dir was written.
     if dir_path and dir_path ~= "" and M.config.cd_action then
-      pcall(vim.cmd, M.config.cd_action .. " " .. vim.fn.fnameescape(dir_path))
+      pcall(vim.api.nvim_cmd, { cmd = M.config.cd_action, args = { dir_path } }, {})
     end
 
     -- Open the file if one was written.
     if file_path and file_path ~= "" then
       local action = M.config.open_action or "edit"
-      pcall(vim.cmd, action .. " " .. vim.fn.fnameescape(file_path))
+      local ok = pcall(vim.api.nvim_cmd, { cmd = action, args = { file_path } }, {})
+      if ok and line_num and line_num > 0 then
+        pcall(vim.api.nvim_win_set_cursor, 0, { line_num, 0 })
+        pcall(vim.cmd, "normal! zv")
+      end
     end
   end)
 end
