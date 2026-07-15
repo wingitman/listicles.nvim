@@ -6,7 +6,6 @@ terminal file explorer in a floating window for directory navigation.
 ## Requirements
 
 - Neovim >= 0.9
-- Go 1.21+ (to build)
 - [listicles](https://github.com/wingitman/listicles)
 
 ## Installation
